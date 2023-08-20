@@ -1,0 +1,35 @@
+<ul class="divide-y divide-gray-200 w-full">
+    {% for blog in blogs %}
+    <li class="py-12"><article>
+        <time class="text-base font-medium leading-6 text-gray-400">{{blog.created}}</time>
+        <h2 class="text-2xl font-bold leading-8 tracking-tight">
+            <a class="text-gray-900" href="{% url 'page-blog' blog.id %}">{{blog.title}}</a>
+        </h2>
+        <small class="block">👨‍🦰 {{blog.author.username}} 
+            {% if request.user == blog.author %}
+            | <a href="{% url 'update-blog' blog.id %}">✏️ Edit</a> | <a class="delete-blog" data-postType="blog" data-title="{{blog.title}}"  href="{% url 'delete-blog' blog.id %}">❌ Delete</a>
+            {% endif %}
+        </small>
+        <p>
+            {{blog.description|truncatewords_html:50}}
+        </p>
+        <div class="text-base font-medium leading-6"><a class="text-pink-400 hover:text-pink-600" href="{% url 'page-blog' blog.id %}">Read more →</a></div>
+        </article>
+    </li>
+    {%empty%}
+    <li class="py-12"><article>
+        <div>
+            No blogs found
+        </div>
+    </li>
+    {% endfor %}
+<ul>
+
+<script>
+    document.querySelectorAll('.delete-blog').forEach( button => {
+        button.onclick = function (e) {
+            if(!confirm(`You are about to delete the ${this.getAttribute('data-postType')} with title "${this.getAttribute('data-title')}."\nSure na?`))
+                e.preventDefault();
+        }
+    });
+</script>

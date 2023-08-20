@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block pagetitle %}
+  <header class="space-y-1 pb-8 pt-6 md:space-y-5">
+    <h1 class="text-3xl font-bold leading-9 tracking-tight text-gray-900 sm:text-4xl sm:leading-10 md:text-6xl md:leading-14">Latest</h1><p class="text-lg leading-7 text-gray-400">This is a blog website created with django as a project</p>
+  </header>
+{% endblock %}
+
+{% block content %}
+  {% include 'blog\list_blog.html' %}
+{% endblock %}
