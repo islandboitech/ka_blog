@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+    {% load static %}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://tailwind-nextjs-starter-blog.vercel.app/_next/static/chunks/polyfills-78c92fac7aa8fdd8.js"></script>
+    <link rel="stylesheet" href="{% static 'styles/main.css' %}">
     <title>Document</title>
 </head>
 <body>
@@ -65,10 +67,13 @@
         {% endblock pagetitle %}
     </header>
 
-    {% block content %}
-    
-    {% endblock content %}
+    <div class="flex sm:space-x-14">
+    {% block sidebar_left %}
+    {% endblock sidebar_left %}
 
+    {% block content %}
+    {% endblock content %}
+    </div>
 </main>
 {%include 'backtotop.html'%}
 </body>

@@ -1,0 +1,24 @@
+<div class="py-4 px-6">
+  <!-- <h3 class="text-primary-500 font-bold uppercase">All</h3> -->
+
+  <ul>
+    <li class="my-3 pt-50">
+      <h3>Recent Activity</h3>
+    </li>
+    {% for comment in recent_activity %}
+      <li class="my-3">
+        <small>
+          <a href="{% url 'user-profile' comment.author.id %}">👨‍🦰 {{ comment.author }}</a> | {{ comment.created|timesince }} ago
+          {% if request.user == comment.author %}
+            | <a href="{% url 'delete-comment' comment.blog.id comment.id %}">❌ Delete</a>
+          {% endif %}
+          <h4>Replied to "{{comment.blog}}"</h4>
+        </small>
+        <p>{{ comment.comment|truncatewords_html:10 }}</p>
+        <hr />
+        {% empty %}
+        <small>No comments yet.</small>
+      </li>
+    {% endfor %}
+  </ul>
+</div>

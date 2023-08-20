@@ -7,13 +7,27 @@
   </header>
 {% endblock %}
 
+
+
+{% block sidebar_left %}
+  <div class="hidden max-h-screen h-full sm:flex flex-wrap bg-gray-50 dark:bg-gray-900/70 shadow-md pt-5 dark:shadow-gray-800/40 rounded min-w-[280px] max-w-[280px] sticky top-28">
+    {% include 'blog\list_sidebar_topics.html' %}
+  </div>
+{% endblock %}
+
 {% block content %}
-  <article>{{ blog.description|linebreaksbr }}</article>
+  <div class="w-full">
+    <article>{{ blog.description|linebreaksbr }}</article>
   <div class="wrapper-comment">
     <br />
     <p>Comments</p>
     {% for comment in comments %}
-      <small>{{ comment.user }} | {{ comment.created|timesince }} ago</small>
+      <small>
+        <a href="{% url 'user-profile' comment.author.id %}">👨‍🦰 @{{ comment.author }} </a>| {{ comment.created|timesince }} ago
+        {% if request.user == comment.author %}
+          | <a href="{% url 'delete-comment' comment.blog.id comment.id %}">❌ Delete</a>
+        {% endif %}
+      </small>
       <section>{{ comment.comment }}</section>
       <hr />
       {% empty %}
@@ -32,6 +46,9 @@
 
   <div class="wrapper-participants">
     <h2>Particpants</h2>
-    <p>paricipants list goes here</p>
+    {% for user in participants %}
+      <small><a href="{% url 'user-profile' user.id %}"></a>👨‍🦰 @{{ user }}</small>
+    {% endfor %}
+  </div>
   </div>
 {% endblock %}

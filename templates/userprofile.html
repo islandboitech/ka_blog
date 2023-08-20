@@ -2,7 +2,10 @@
 
 {% block pagetitle %}
   <header class="space-y-1 pb-8 pt-6 md:space-y-5">
-    <h1 class="text-3xl font-bold leading-9 tracking-tight text-gray-900 sm:text-4xl sm:leading-10 md:text-6xl md:leading-14">All blogs</h1><p class="text-lg leading-7 text-gray-400">{{ blog.author }}</p>
+    <h1 class="text-3xl font-bold leading-9 tracking-tight text-gray-900 sm:text-4xl sm:leading-10 md:text-6xl md:leading-14">User Profile</h1><p class="text-lg leading-7 text-gray-400">
+      <small>{{ author.username }}</small>
+      About the user goes here
+    </p>
   </header>
 {% endblock %}
 

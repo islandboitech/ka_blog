@@ -5,7 +5,7 @@
         <h2 class="text-2xl font-bold leading-8 tracking-tight">
             <a class="text-gray-900" href="{% url 'page-blog' blog.id %}">{{blog.title}}</a>
         </h2>
-        <small class="block">👨‍🦰 {{blog.author.username}} 
+        <small class="block"><a href="{% url 'user-profile' blog.author.id %}">👨‍🦰 {{blog.author.username}}</a>
             {% if request.user == blog.author %}
             | <a href="{% url 'update-blog' blog.id %}">✏️ Edit</a> | <a class="delete-blog" data-postType="blog" data-title="{{blog.title}}"  href="{% url 'delete-blog' blog.id %}">❌ Delete</a>
             {% endif %}

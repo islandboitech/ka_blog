@@ -1,14 +1,22 @@
 from django.shortcuts import render, redirect
-from blog.models import Blog
+from blog.models import Blog, Topic, Comment
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
+from django.db.models import Q, Count
 
 
 def home(request):
+    topics = Topic.objects.annotate(blogcount=Count("blog"))
+    blogtotalcount = Blog.objects.all().count()
     latest_posts = Blog.objects.all()[:5]  # limit number of records
-    context = {"blogs": latest_posts}
+
+    context = {
+        "blogs": latest_posts,
+        "topics": topics,
+        "blogtotalcount": blogtotalcount,
+    }  # for sidebar display
     return render(request, "latest.html", context)
 
 
@@ -61,3 +69,19 @@ def loginUser(request):
 def logoutUser(request):
     logout(request)
     return redirect("page_home")
+
+
+def userProfile(request, pk):
+    author = User.objects.get(id=pk)
+    blogtotalcount = Blog.objects.all().count()
+    topics = Topic.objects.annotate(blogcount=Count("blog"))
+    recent_activity = author.comment_set.all()
+    blogs = author.blog_set.all()
+    context = {
+        "author": author,
+        "topics": topics,
+        "blogtotalcount": blogtotalcount,
+        "recent_activity": recent_activity,
+        "blogs": blogs,
+    }
+    return render(request, "userprofile.html", context)
