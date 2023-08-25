@@ -73,14 +73,14 @@ def logoutUser(request):
 
 def userProfile(request, pk):
     author = User.objects.get(id=pk)
-    blogtotalcount = Blog.objects.all().count()
+    # blogtotalcount = Blog.objects.all().count()
     topics = Topic.objects.annotate(blogcount=Count("blog"))
     recent_activity = author.comment_set.all()
     blogs = author.blog_set.all()
     context = {
         "author": author,
         "topics": topics,
-        "blogtotalcount": blogtotalcount,
+        # "blogtotalcount": blogtotalcount,
         "recent_activity": recent_activity,
         "blogs": blogs,
     }

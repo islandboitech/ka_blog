@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import blogs, blog, new_blog, update_blog, delete_blog, delete_comment
+from .views import blogs, blog, new_blog, update_blog, delete_blog, delete_comment, edit_userprofile
 
 urlpatterns = [
     path("blogs/", blogs, name="page-blogs"),
@@ -7,9 +7,6 @@ urlpatterns = [
     path("blog/new/", new_blog, name="new-blog"),
     path("blog/update/<int:pk>/", update_blog, name="update-blog"),
     path("blog/delete/<int:pk>/", delete_blog, name="delete-blog"),
-    path(
-        "blog/delete_comment/<int:blogid>/<int:pk>/",
-        delete_comment,
-        name="delete-comment",
-    ),
+    path("blog/delete_comment/<int:blogid>/<int:pk>/",delete_comment,name="delete-comment"),
+    path('user/editprofile/', edit_userprofile, name="edit-profile")
 ]

@@ -3,7 +3,7 @@
       
       <ul>
       <li class="my-3">
-          <a class="py-2 px-3 uppercase text-sm font-medium text-gray-500 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-500" aria-label="View posts tagged next-js" href="{% url 'page-blogs' %}">All ({{blogtotalcount}})</a>
+          <a class="py-2 px-3 uppercase text-sm font-medium text-gray-500 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-500" aria-label="View posts tagged next-js" href="{% url 'page-blogs' %}">All Topics ({{topics.count}})</a>
         </li>
           {% for topic in topics %}
           <li class="my-3">

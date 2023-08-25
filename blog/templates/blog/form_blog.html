@@ -9,7 +9,29 @@
 {% block content %}
   <form method="post" action="">
     {% csrf_token %}
-    {{ form.as_p }}
+
+    <section>
+      <h4><label for="blog-topic">Topic</label></h4>
+      <input type="text" name="topic" value="{{blog.topic}}" required list="topic-list" />
+      <datalist id="topic-list">
+        <select>
+          {% for topic in topics %}
+            <option value="{{ topic.name }}">{{ topic.name }}</option>
+          {% endfor %}
+        </select>
+      </datalist>
+    </section>
+
+    <section>
+      <h4><label for="blog-topic">Title</label></h4>
+      {{ form.title }}
+    </section>
+
+    <section>
+      <h4><label for="blog-topic">Body</label></h4>
+      {{ form.description }}
+    </section>
+
     <input type="submit" value="Submit" />
   </form>
 {% endblock %}
