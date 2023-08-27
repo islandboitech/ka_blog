@@ -71,7 +71,7 @@
         </small>
     </section>
 
-    <div id="wrapper-content" class="uk-dropcap uk-text-justify">
+    <div id="wrapper-content" class="uk-dropcap uk-text-justify margin-bottom-medium">
     {% if blog.featured_image %}
         <img src="{{blog.featured_image.url}}" alt="" class="uk-width-expand">
     {% endif %}
@@ -106,7 +106,7 @@
         {% endif %}
 
         {% if comments|length > 0 %}
-        <h5 class="uk-text-danger"><span uk-icon="icon: comments" id="section-list-comments"></span> Comments</h5>
+        <h5 class="uk-text-danger uk-margin-large-top"><span uk-icon="icon: comments" id="section-list-comments"></span> Comments</h5>
         <ul class="uk-comment-list" uk-scrollspy="cls: uk-animation-fade; target: .uk-comment; delay: 200;">
             {% for comment in comments %}
             <li>

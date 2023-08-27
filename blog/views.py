@@ -118,7 +118,7 @@ def update_blog(request, pk):
         # form = FormBlog(request.POST, instance=blog)
         # if form.is_valid():
         #     form.save()
-        return redirect("page-blogs")
+        return redirect("page-blog", pk)
     else:
         form = FormBlog(instance=blog)
         # topics = Topic.objects.all()
@@ -170,5 +170,5 @@ def update_comment(request, blogid, pk):
         form = FormComment(instance=comment)
         related_posts=Blog.objects.filter(topic__name__iexact=blog.topic).exclude(id=blogid)[:10]
         recent=getRecentActivity()
-        context = {"form": form, "blog": blog, 'related_posts': related_posts, 'recent':recent, 'comments':comments, 'thecomment':comment}
+        context = {"form": form, "blog": blog, 'related_posts': related_posts, 'recent':recent, 'comments':comments, 'thecomment':comment.comment}
         return render(request, "blog/blog.html", context)
