@@ -25,8 +25,9 @@
                             <section class="uk-width-expand">
                                 <h5 class="uk-comment-title uk-margin-remove uk-link-reset"><a
                                         href="{% url 'user-profile' blog.author.id %}">@{{blog.author.username}}</a></h5>
-                                <time class="uk-comment-meta">{{blog.author.email}}</time>
+                                <time class="uk-comment-meta mdc-text-tiny">{{blog.author.email}}</time>
                             </section>
+                            <small>{{blog.author.bio|truncatewords_html:50}}</small>
                         </div>
                     </header>
                 </article>
@@ -42,8 +43,8 @@
 
             {% for post in related_posts %}
             <li><a href="{% url 'page-blog' post.id %}">
-                <div>@{{post.author.username}} | {{post.created|timesince}} ago<div class="uk-nav-subtitle">{{post.title}}</div>
-                </div>
+              
+                <div><div class="uk-nav-subtitle">{{post.title}}</div><span class="mdc-text-tiny">Written by <b>@{{post.author.username}}</b> {{post.created|timesince}} ago</span></div>
             </a></li>
         <li>
             {% endfor %}
@@ -64,9 +65,9 @@
 {% block content %}
     <section class="uk-margin-medium-bottom">
         
-        <h2 class="uk-text-secondary uk-margin-remove-bottom uk-margin-remove-top">{{ blog.title }}{% if request.user == blog.author %}  <a class="uk-text-small mdc-link-no-line" href="{% url 'update-blog' blog.id %}">✏️Edit Blog</a> {% endif %}</h2>
+        <h2 class="uk-text-secondary uk-margin-remove-bottom uk-margin-remove-top">{{ blog.title }}{% if request.user == blog.author %}  <a class="uk-text-small mdc-link-no-line" href="{% url 'update-blog' blog.id %}">✏️Edit Blog</a>  <a class="delete-blog uk-text-small mdc-link-no-line" data-postType="blog" data-title="{{blog.title}}"  href="{% url 'delete-blog' blog.id %}">❌ Delete</a>{% endif %}</h2>
         <small class="uk-text-muted"><h5 class="uk-text-danger uk-margin-remove-bottom"><span uk-icon="tag"></span> {{blog.topic|title}}</h5>
-            Written by <a href="{% url 'user-profile' blog.author.id %}">{{ blog.author }}</a> {{ blog.created|timesince }} ago.
+            Written by <a href="{% url 'user-profile' blog.author.id %}">@{{ blog.author }}</a> {{ blog.created|timesince }} ago.
         </small>
     </section>
 
@@ -84,10 +85,20 @@
         <form method="post" action="" class="uk-margin-large-top">
             {% csrf_token %}
             <fieldset class="uk-fieldset">
-                <legend class="uk-legend uk-text-normal">Write a comment</legend>
+                <legend class="uk-legend uk-text-normal">
+                  {%if thecomment%}
+                  Edit comment
+                  {%else%}
+                  Write a comment
+                  {%endif%}
+                
+                </legend>
                 <div class="uk-margin">
-                    <textarea class="uk-textarea" rows="5" placeholder="Write your message here..." aria-label="Textarea"  name="comment"></textarea>
+                    <textarea class="uk-textarea" rows="5" placeholder="Write your message here..." aria-label="Textarea"  name="comment">{{thecomment}}</textarea>
                     <input type="submit" class="uk-button uk-button-primary uk-margin-small-top" value="Submit" />
+                    {%if thecomment%}
+                    <a class="uk-button uk-button-danger uk-margin-small-top" href="{%url 'page-blog' blog.id%}">Cancel edit</a>
+                    {%endif%}
                 </div>
             </fieldset>
         </form>
@@ -110,6 +121,10 @@
                                 <h4 class="uk-comment-title uk-margin-remove uk-link-reset"><a
                                         href="{% url 'user-profile' comment.author.id %}">@{{ comment.author.username }}</a></h4>
                                 <small class="uk-comment-meta">{{ comment.created|timesince }} ago</small>
+                                {% if request.user == comment.author %}
+          |                       
+                                <small class="uk-comment-meta"><a class="delete-comment mdc-link-no-line" data-postType="comment" data-title="{{comment.comment|linebreaksbr|truncatewords:10}}" href="{% url 'delete-comment' comment.blog.id comment.id %}">❌ Delete</a> <a class="mdc-link-no-line" href="{% url 'update-comment' comment.blog.id comment.id %}">✏️ Edit</a></small>
+                                {% endif %}
                             </section>
                         </div>
                     </header>
@@ -124,8 +139,22 @@
         {%endif%}
     </div>
     <!-- end: comment section -->
-{% endblock %}
+    <script>
+      document.querySelectorAll('.delete-comment').forEach( button => {
+          button.onclick = function (e) {
+              if(!confirm(`You are about to delete the ${this.getAttribute('data-postType')}.\n "${this.getAttribute('data-title')}."\nClick okay to continue`))
+                  e.preventDefault();
+          }
+      });
 
+      document.querySelectorAll('.delete-blog').forEach( button => {
+        button.onclick = function (e) {
+            if(!confirm(`You are about to delete the ${this.getAttribute('data-postType')} with title "${this.getAttribute('data-title')}."\nSure na?`))
+                e.preventDefault();
+        }
+    });
+  </script>
+{% endblock %}
 
 
 

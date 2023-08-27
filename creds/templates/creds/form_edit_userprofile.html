@@ -1,4 +1,115 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+    {% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>kaBlog.</title>
+    <!-- UIkit CSS -->
+    <link rel="stylesheet" href="{% static 'styles/uikit.css' %}" />
+    <link rel="stylesheet" href="{% static 'styles/custom.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <!-- UIkit JS -->
+    <script src="{% static 'js/uikit.min.js' %}"></script>
+    <script src="{% static 'js/uikit-icons.min.js' %}"></script>
+</head>
+
+<body>
+      <div class="uk-section uk-flex uk-flex-middle uk-animation-fade" uk-height-viewport>
+        <div class="uk-width-1-1">
+          <div class="uk-container">
+            <div class="uk-grid-margin uk-grid uk-grid-stack" uk-grid>
+              <div class="uk-width-1-1">
+                <div class="uk-margin uk-width-xlarge uk-margin-auto uk-card uk-card-default uk-card-body uk-box-shadow-large">
+     <form method="post" action="" enctype="multipart/form-data">
+      {% csrf_token %}
+   
+
+      <form method="post" action="" enctype="multipart/form-data">
+      <h3 class="uk-card-title uk-text-center">{{pagetitle|title}}</h3>
+      {% if messages %}
+      <div class="uk-margin uk-text-center uk-text-small uk-text-danger">
+          {% for message in messages %}
+              <div>{{message}}</div>
+          {% endfor %}
+        </div>
+      {%endif%}
+
+        <div class="uk-margin">
+          <div class="uk-inline uk-width-1-1">
+            <span class="uk-form-icon" uk-icon="icon: user"></span>
+            <input type="text" name="username" maxlength="150" required="" id="id_username" class="uk-input uk-form-large" placeholder="User name" value="{{user.username}}">
+          </div>
+        </div>
+
+        <div class="uk-margin">
+          <div class="uk-inline uk-width-1-1">
+            <span class="uk-form-icon" uk-icon="icon: info"></span>
+            <input type="text" name="name" maxlength="200" required="" id="id_name" class="uk-input uk-form-large" placeholder="Full name" value="{{user.name}}">
+          </div>
+        </div>
+  
+        <div class="uk-margin">
+          <div class="uk-inline uk-width-1-1">
+            <span class="uk-form-icon" uk-icon="icon: mail"></span>
+            <input type="email" name="email" maxlength="255" autofocus="" required="" id="id_email" class="uk-input uk-form-large" placeholder="Email address" value="{{user}}">
+          </div>
+        </div>
+  
+        <section class="uk-margin" uk-margin>
+          <h4 class="uk-margin-remove-bottom"><label for="id_bio">Bio</label></h4>
+          <textarea name="bio" cols="40" rows="10" id="id_bio" spellcheck="false" class="uk-textarea uk-form-large uk-width-expand" aria-label="Textarea">{{user.bio}}</textarea>
+        </section>
+
+
+        <style>
+          #mdc-workaround-remove-fileinput input[type=file]{
+            display: none;
+          }
+        </style>
+
+      <section class="uk-margin" uk-margin>
+        <h4 class="uk-margin-remove-bottom"><label>Profile Picture</label></h4>
+        <div id="mdc-workaround-remove-fileinput">
+        {{ form.avatar }}
+        </div>
+        <div uk-form-custom="target: true" class="uk-width-expand">
+            <input type="file" aria-label="Custom controls" name="avatar" accept="image/*" id="id_avatar">
+            <input class="uk-input uk-form-large" type="text" placeholder="Select file" aria-label="Custom controls" disabled>
+        </div>
+      </section>
+   
+
+        <div class="uk-margin">
+          <input type="submit" class="uk-button uk-button-primary uk-button-large uk-width-1-1" value="Save changes">
+        </div>
+        <div class="uk-text-small uk-text-center"><a href="{%url 'page-blogs'%}"><span class=" uk-margin-remove-right" uk-icon="home"></span> Home</a> <a href="{% url 'logout' %}"><span class="uk-margin-small-left uk-margin-remove-right" uk-icon="sign-out"></span> Logout</a>
+        </div>
+      </form>
+    <footer class="uk-width-1-1 uk-text-center uk-text-small uk-margin-medium-top">
+      <div class="uk-card-body uk-padding-remove-top">
+          <a class="uk-display-block uk-link-reset" href="{% url 'page-blogs' %}" aria-label="Back to Home"><img src="{% static 'images/logov3.png' %}"
+                  class="uk-margin-remove-right uk-margin-small-bottom mdc-logo-tiny uk-display-inline-block" alt="kaBlog.">
+              <h5 class="uk-margin-remove uk-text-bold uk-display-inline-block">kaBlog.</h5>
+          </a>
+          <small class="uk-margin-remove-bottom">Mark Anthony Cruzat • © 2023 • Blog Site for All</small>
+          <small class="uk-margin-remove-bottom uk-display-block">A Django CRUD Project</small>
+      </div>
+    </footer>
+
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body></html>
+
+{% comment %} {% extends 'base.html' %}
 
 {% block pagtitle %}
   <h1>Update user profile [{{ request.user }}]</h1>
@@ -15,4 +126,4 @@
     {% endfor %}
     <input type="submit" value="Submit" />
   </form>
-{% endblock %}
+{% endblock %} {% endcomment %}

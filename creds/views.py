@@ -3,12 +3,22 @@ from blog.models import Blog, Topic, Comment
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 # from django.contrib.auth.forms import userRegistrationForm
-from django.db.models import Count
+from django.db.models import Count, Q, Value
 from django.contrib.auth.decorators import login_required
 from .forms import FormUserProfile, userRegistrationForm
 # from django.contrib.auth.models import User
 from .models import User
 
+
+def getRecentActivity(pk):
+    # variable declarations
+    # start: queryset UNION BLOG and COMMENT for recent activity
+    qsBlog = Blog.objects.all().values('id', 'author', 'author__username', 'author__avatar', 'created', 'updated', 'isupdated', 'title').annotate(comment=Value(''), action1=Value('Posted a blog'), action2=Value('Edited a blog')).filter(author__id__iexact=pk)
+    qsComment = Comment.objects.all().values('id', 'author', 'author__username', 'author__avatar', 'created', 'updated', 'isupdated', 'blog__title', 'comment').annotate(action1=Value('Wrote a comment to'), action2=Value('Edited a comment')).filter(author__id__iexact=pk)
+    recent=qsBlog.union(qsComment).order_by('-updated', '-created')[:5]
+    print(recent)
+    return recent
+    # end: queryset UNION
 
 def registerUser(request):
     if request.user.is_authenticated:
@@ -67,15 +77,20 @@ def logoutUser(request):
 
 def userProfile(request, pk):
     author = User.objects.get(id=pk)
+    blogs = author.blog_set.all().annotate(countcomments=Count("comment"))
     # blogtotalcount = Blog.objects.all().count()
-    topics = Topic.objects.annotate(blogcount=Count("blog"))
-    recent_activity = author.comment_set.all()
-    blogs = author.blog_set.all()
+    topics = Topic.objects.annotate(blogcount=Count(
+        "blog",
+        Q(blog__author__id__iexact=pk)
+        ))
+    # recent_activity = author.comment_set.all()
+    recent=getRecentActivity(pk)
     context = {
         "author": author,
         "topics": topics,
+        "recent": recent,
         # "blogtotalcount": blogtotalcount,
-        "recent_activity": recent_activity,
+        # "recent_activity": recent_activity,
         "blogs": blogs,
     }
     return render(request, "creds/userprofile.html", context)
@@ -91,5 +106,5 @@ def edit_userprofile(request):
             return redirect('user-profile', pk=user.id)
 
     form=FormUserProfile(instance=user)
-    context={'form':form}
+    context={'form':form, 'pagetitle':"Edit Profile"}
     return render(request, 'creds/form_edit_userprofile.html', context)

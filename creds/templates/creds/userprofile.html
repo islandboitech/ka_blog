@@ -1,5 +1,51 @@
 {% extends 'base.html' %}
 
+{% block pageheading %}
+  {% include 'pageheading-small.html' %}
+  {% block navigation %}
+    {% include 'navigation.html' %}
+  {% endblock %}
+{% endblock %}
+
+{% block sidebar %}
+  {% include 'blog/list_sidebar_topics.html' %}
+  {% include 'blog/list_sidebar_recentactivity.html' %}
+{% endblock %}
+
+{% block content %}
+<section class="uk-margin-medium-bottom">
+  <article class="uk-comment" role="comment">
+    <header class="uk-comment-header">
+        <div class="uk-grid-small uk-flex-middle" uk-grid>
+            <div class="uk-width-auto">
+                <img class="uk-comment-avatar uk-border-circle" src="{{user.avatar.url}}"
+                    width="80" height="80" alt="">
+            </div>
+            <section class="uk-width-expand">
+                <h4 class="uk-margin-remove uk-link-reset"><a href="{% url 'user-profile' user.id %}">@{{ user.username }}</a></h4>
+                <small class="uk-comment-meta uk-display-block">{{ user.name}}</small>
+                <small class="uk-comment-meta">{{ user.email}}</small>
+            </section>
+        </div>
+    </header>
+    <div class="uk-comment-body uk-text-small uk-text-justify">
+      {{ user.bio|linebreaksbr }}
+  </div>
+  <h2 class="uk-text-secondary uk-margin-remove-bottom uk-margin-large-top">Blog Posts</h2>
+</article>      
+
+
+   {% comment %} <h2 class="uk-text-secondary uk-margin-remove-bottom uk-margin-remove-top">User Profile</h2>
+ <small class="uk-text-muted"><h5 class="uk-text-danger uk-margin-remove-bottom"><span uk-icon="tag"></span> {{blog.topic|title}}</h5>
+      Written by <a href="{% url 'user-profile' blog.author.id %}">@{{ blog.author }}</a> {{ blog.created|timesince }} ago.
+  </small> {% endcomment %}
+</section>
+  {% include 'blog/list_blog.html' %}
+{% endblock %}
+
+{% comment %}
+{% extends 'base.html' %}
+
 {% block pagetitle %}
   <header class="space-y-1 pb-8 pt-6 md:space-y-5">
     <h1 class="text-3xl font-bold leading-9 tracking-tight text-gray-900 sm:text-4xl sm:leading-10 md:text-6xl md:leading-14">User Profile</h1><p class="text-lg leading-7 text-gray-400">
@@ -21,3 +67,4 @@
     {% include 'blog/list_blog.html' %}
   </div>
 {% endblock %}
+{% endcomment %}

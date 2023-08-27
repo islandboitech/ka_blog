@@ -2,11 +2,22 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from .models import Blog, Topic, Comment
-from .forms import FormBlog
-from django.db.models import Count, Q, Value, Case, When
+from .forms import FormBlog, FormComment
+from django.db.models import Count, Q, Value
 from django.contrib import messages
 from datetime import date
 # {{request.META.HTTP_REFERER}} # use this link to go back to the previous page (used in delete form in this system)
+
+
+def getRecentActivity():
+    # variable declarations
+    # start: queryset UNION BLOG and COMMENT for recent activity
+    qsBlog = Blog.objects.all().values('id', 'author', 'author__username', 'author__avatar', 'created', 'updated', 'isupdated', 'title').annotate(comment=Value(''), action1=Value('Posted a blog'), action2=Value('Edited a blog'))
+    qsComment = Comment.objects.all().values('id', 'author', 'author__username', 'author__avatar', 'created', 'updated', 'isupdated', 'blog__title', 'comment').annotate(action1=Value('Wrote a comment to'), action2=Value('Edited a comment'))
+    recent=qsBlog.union(qsComment).order_by('-updated', '-created')[:5]
+    return recent
+    # end: queryset UNION
+    
 
 # Create your views here.
 def blogs(request):
@@ -20,40 +31,34 @@ def blogs(request):
         | Q(author__username__icontains=q)
     ).order_by('-updated', '-created')
     # recent_activity = Comment.objects.all()[:5] # show all messages regardless of topic
-    recent_activity = Comment.objects.all()[:5]  # show messages based on the topic selected
-
-    # start: queryset UNION BLOG and COMMENT for recent activity
-    qsBlog = Blog.objects.all().values('id', 'author', 'author__username', 'author__avatar', 'created', 'updated', 'title').annotate(comment=Value(''), action=Value('Posted a blog'))
-    qsComment = Comment.objects.all().values('id', 'author', 'author__username', 'author__avatar', 'created', 'updated', 'blog__title', 'comment').annotate(action=Value('Wrote a comment to'))
-    recent=qsBlog.union(qsComment).order_by('-updated', '-created')[:5]
-    # print(recent)
-    # end: queryset UNION
-
+    # recent_activity = Comment.objects.all()[:5]  # show messages based on the topic selected
+    recent=getRecentActivity()
     topics = Topic.objects.annotate(blogcount=Count("blog"))
-    context = {"blogs": blogs, "topics": topics, "recent_activity": recent_activity, 'recent':recent }
+    context = {"blogs": blogs, "topics": topics,  'recent':recent }
     return render(request, "blog/blogs.html", context)
 
 
 def blog(request, pk):
     blog = Blog.objects.get(id=pk)
     topic=blog.topic
-    print(topic)
     if request.method == "POST":
         comment = Comment.objects.create(author=request.user, blog=blog, comment=request.POST.get("comment"))
         blog.participants.add(request.user)
+        messages.success(request, f"Comment has been successfully created." )
         return redirect("page-blog", pk=blog.id)
     related_posts=Blog.objects.filter(topic__name__iexact=topic).exclude(id=pk)[:10]
     # topics = Topic.objects.annotate(blogcount=Count("blog"))
     participants = blog.participants.all()
     # comments = blog.comment_set.all().order_by("-created")
     comments = blog.comment_set.all()  # ordering is defined in the model directly
-
+    recent=getRecentActivity()
 
     context = {
         "blog": blog,
         "comments": comments,
         "participants": participants,
         "related_posts": related_posts,
+        "recent":recent
         # "topics": topics,
     }
     return render(request, "blog/blog.html", context)
@@ -72,6 +77,7 @@ def new_blog(request):
                 description=request.POST.get('description'),
                 featured_image= request.FILES['featured_image'] if request.FILES.get('featured_image') is not None else None
             )
+            messages.success(request, f"You blog has been sucessfully published." )
             return redirect("page-blogs")
         except:
             messages.error(request, "An error occured while saving the blog.")
@@ -82,9 +88,9 @@ def new_blog(request):
         #     blog.author = request.user
         #     blog.save()
     else:
-        topics = Topic.objects.all()
+        recent=getRecentActivity()
         form = FormBlog()
-        context = {"pagetitle": "Add New Blog", "form": form, "topics": topics}
+        context = {"pagetitle": "Add New Blog", "form": form, "recent": recent}
         return render(request, "blog/form_blog.html", context)
 
 
@@ -108,7 +114,7 @@ def update_blog(request, pk):
         if not blog.isupdated:
             blog.isupdated=True
         blog.save()
-
+        messages.success(request, f"Blog has been updated." )
         # form = FormBlog(request.POST, instance=blog)
         # if form.is_valid():
         #     form.save()
@@ -117,7 +123,7 @@ def update_blog(request, pk):
         form = FormBlog(instance=blog)
         # topics = Topic.objects.all()
         related_posts=Blog.objects.filter(topic__name__iexact=blog.topic).exclude(id=pk)[:10]
-        context = {"pagetitle": "Edit Blog", "form": form, "blog": blog, 'related_posts': related_posts}
+        context = {"pagetitle": "Edit Blog", "form": form, "blog": blog, 'related_posts': related_posts, 'recent':getRecentActivity()}
         return render(request, "blog/form_blog.html", context)
 
 
@@ -127,6 +133,7 @@ def delete_blog(request, pk):
     if request.user != blog.author:
         return HttpResponse("You are not allowed to edit or delete a blog created by others.")
     blog.delete()
+    messages.success(request, f"Blog has been successfully deleted." )
     return redirect("page-blogs")
 
 
@@ -136,4 +143,32 @@ def delete_comment(request, blogid, pk):
     if request.user != comment.author:
         return HttpResponse("You are not allowed to edit or delete a comment created by others.")
     comment.delete()
-    return redirect("page-blogs", pk=blogid)
+    messages.success(request, f"Comment has been successfully deleted." )
+    return redirect("page-blog", blogid)
+
+@login_required(login_url="login")
+def update_comment(request, blogid, pk):
+    blog = Blog.objects.get(id=blogid)
+    comment = Comment.objects.get(id=pk)
+    print(comment)
+    if request.user != comment.author:
+        return HttpResponse("You are not allowed to edit or update a comment created by others.")
+
+    if request.method == "POST":
+        comment.comment=request.POST.get('comment')
+
+        if not comment.isupdated:
+            comment.isupdated=True
+        comment.save()
+        messages.success(request, f"Comment has been updated." )
+        # form = FormBlog(request.POST, instance=blog)
+        # if form.is_valid():
+        #     form.save()
+        return redirect("page-blog", blogid)
+    else:
+        comments = blog.comment_set.all()
+        form = FormComment(instance=comment)
+        related_posts=Blog.objects.filter(topic__name__iexact=blog.topic).exclude(id=blogid)[:10]
+        recent=getRecentActivity()
+        context = {"form": form, "blog": blog, 'related_posts': related_posts, 'recent':recent, 'comments':comments, 'thecomment':comment}
+        return render(request, "blog/blog.html", context)

@@ -13,7 +13,7 @@ class User(AbstractUser):
     email=models.EmailField(verbose_name="Email address", max_length=255, unique=True,)
     bio=models.TextField(null=True, blank=True)
     # avatar=models.ImageField(null=True, default='avatar.png')
-    avatar=models.ImageField(null=True, verbose_name='Profile piture', upload_to = user_directory_path, default='avatar/avatar.png')
+    avatar=models.ImageField(null=True, verbose_name='Profile piture', upload_to = user_directory_path, default='avatar.png')
 
     USERNAME_FIELD="email"
     REQUIRED_FIELDS=[]

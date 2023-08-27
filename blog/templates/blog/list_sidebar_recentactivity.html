@@ -34,11 +34,11 @@
 
 {% load static %}
 <div>
-<h5 class="uk-text-danger">Recent Activity</h5>
-<ul class="uk-comment-list">
+<h5 class="uk-text-danger uk-margin-remove-bottom">Recent Updates</h5>
+<ul class="uk-comment-list uk-margin-remove-top">
   {% for activity in recent %}
-    <li>
-        <article class="uk-comment" role="comment">
+    <li class="uk-margin-small-top">
+        <article class="uk-padding-small" role="comment">
             <header class="uk-comment-header uk-margin-remove-bottom">
                 <div class="uk-grid-small uk-flex-middle" uk-grid>
                     <div class="uk-width-auto">
@@ -46,16 +46,22 @@
                             width="65" height="65" alt="">
                     </div>
                     <section class="uk-width-expand">
-                        <h4 class="uk-comment-title uk-margin-remove uk-link-reset"><a
-                                href="{% url 'user-profile' activity.author %}">@{{ activity.author__username }}</a></h4>
+                        <h5 class="uk-margin-remove uk-link-reset"><a
+                                href="{% url 'user-profile' activity.author %}">@{{ activity.author__username }}</a></h5>
                         <time class="uk-comment-meta uk-text-small">{{ activity.updated|timesince }} ago</time>
                     </section>
                 </div>
             </header>
             <div class="uk-comment-body uk-text-small">
-              <small class="uk-text-muted">{{activity.action}} "{{activity.title}}"</small>
+              <small class="uk-text-muted">
+                {% if activity.isupdated %}
+                  {{activity.action2}}
+                {% else %}
+                {{activity.action1}}
+                {% endif %}
+                "{{activity.title}}"</small>
               {% if activity.comment%}
-                  <p class="uk-margin-remove">{{ activity.comment|truncatewords_html:8}}</p>
+                  <p class="uk-margin-remove uk-padding-small uk-border-rounded uk-background-muted">{{ activity.comment|truncatewords_html:8}}</p>
               {% endif %}
             </div>
         </article>

@@ -64,6 +64,10 @@ a.mdc-link-no-line {
     width: 1.5rem;
 }
 
+.mdc-text-tiny,
+.mdc-text-tiny * {
+    font-size: .7rem !important;
+}
 
 /* subnav */
 

@@ -21,7 +21,7 @@
 <div>
 <h5 class="uk-text-danger">Topics</h5>
 <ul class="uk-subnav uk-subnav-pill uk-text-small" uk-margin>
-  <li class="uk-active" uk-filter-control><a class="uk-border-pill" href="javascript:vod(0)">All <span class="uk-badge uk-margin-small-left">{{topics.count}}</span></a></li>
+  <li class="uk-active" uk-filter-control><a class="uk-border-pill" href="javascript:vod(0)">All <span class="uk-badge uk-margin-small-left">{{blogs|length}}</span></a></li>
   {% for topic in topics %}
     <li uk-filter-control="[data-topic='{{topic.name}}']"><a class="uk-border-pill"
       href="#">{{topic.name}}<span class="uk-badge uk-margin-small-left">{{topic.blogcount}}</span></a>
