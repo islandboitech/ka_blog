@@ -23,14 +23,19 @@
             </div>
             <section class="uk-width-expand">
                 <h4 class="uk-margin-remove uk-link-reset"><a href="{% url 'user-profile' user.id %}">@{{ user.username }}</a></h4>
+                {%if user.name%}
                 <small class="uk-comment-meta uk-display-block">{{ user.name}}</small>
+                {%endif%}
                 <small class="uk-comment-meta">{{ user.email}}</small>
             </section>
         </div>
     </header>
+    {%if user.bio%}
     <div class="uk-comment-body uk-text-small uk-text-justify">
       {{ user.bio|linebreaksbr }}
-  </div>
+    </div>
+    {%endif%}
+    
   <h2 class="uk-text-secondary uk-margin-remove-bottom uk-margin-large-top">Blog Posts</h2>
 </article>      
 

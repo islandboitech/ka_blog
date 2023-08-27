@@ -82,7 +82,7 @@
     <div>
         {% if request.user.is_authenticated %}
         <!-- start: comment form -->
-        <form method="post" action="" class="uk-margin-large-top">
+        <form method="post" action="" class="uk-margin-large-top" id="section-form-comment">
             {% csrf_token %}
             <fieldset class="uk-fieldset">
                 <legend class="uk-legend uk-text-normal">
@@ -106,7 +106,7 @@
         {% endif %}
 
         {% if comments|length > 0 %}
-        <h5 class="uk-text-danger"><span uk-icon="icon: comments"></span> Comments</h5>
+        <h5 class="uk-text-danger"><span uk-icon="icon: comments" id="section-list-comments"></span> Comments</h5>
         <ul class="uk-comment-list" uk-scrollspy="cls: uk-animation-fade; target: .uk-comment; delay: 200;">
             {% for comment in comments %}
             <li>
@@ -123,7 +123,7 @@
                                 <small class="uk-comment-meta">{{ comment.created|timesince }} ago</small>
                                 {% if request.user == comment.author %}
           |                       
-                                <small class="uk-comment-meta"><a class="delete-comment mdc-link-no-line" data-postType="comment" data-title="{{comment.comment|linebreaksbr|truncatewords:10}}" href="{% url 'delete-comment' comment.blog.id comment.id %}">❌ Delete</a> <a class="mdc-link-no-line" href="{% url 'update-comment' comment.blog.id comment.id %}">✏️ Edit</a></small>
+                                <small class="uk-comment-meta"><a class="delete-comment mdc-link-no-line" data-postType="comment" data-title="{{comment.comment|linebreaksbr|truncatewords:10}}" href="{% url 'delete-comment' comment.blog.id comment.id %}">❌ Delete</a> <a class="mdc-link-no-line" href="{% url 'update-comment' comment.blog.id comment.id %}#section-form-comment">✏️ Edit</a></small>
                                 {% endif %}
                             </section>
                         </div>

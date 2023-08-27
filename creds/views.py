@@ -16,7 +16,7 @@ def getRecentActivity(pk):
     qsBlog = Blog.objects.all().values('id', 'author', 'author__username', 'author__avatar', 'created', 'updated', 'isupdated', 'title').annotate(comment=Value(''), action1=Value('Posted a blog'), action2=Value('Edited a blog')).filter(author__id__iexact=pk)
     qsComment = Comment.objects.all().values('id', 'author', 'author__username', 'author__avatar', 'created', 'updated', 'isupdated', 'blog__title', 'comment').annotate(action1=Value('Wrote a comment to'), action2=Value('Edited a comment')).filter(author__id__iexact=pk)
     recent=qsBlog.union(qsComment).order_by('-updated', '-created')[:5]
-    print(recent)
+    # print(recent)
     return recent
     # end: queryset UNION
 
@@ -54,7 +54,7 @@ def loginUser(request):
         password = request.POST.get("password")
         try:
             user = User.objects.get(email=email)
-            print(user)
+            # print(user)
             user = authenticate(request, email=email, password=password)
             if user is not None:
                 login(request, user)
@@ -86,7 +86,7 @@ def userProfile(request, pk):
     # recent_activity = author.comment_set.all()
     recent=getRecentActivity(pk)
     context = {
-        "author": author,
+        "user": author,
         "topics": topics,
         "recent": recent,
         # "blogtotalcount": blogtotalcount,

@@ -47,11 +47,17 @@
                             <a class="uk-button uk-button-text" href="{% url 'page-blog' blog.id %}">Read more</a>
                         </div>
                         <div>
-                            <a class="uk-button uk-button-text" href="#">{{blog.countcomments}} Comments</a>
+                            <a class="uk-button uk-button-text" href="{% url 'page-blog' blog.id %}#section-list-comments">{{blog.countcomments}} Comments</a>
                         </div>
                     </div>
                 </article>
             </div>
+        </div>
+    </li>
+    {% empty %}
+    <li data-topic="{{blog.topic}}" data-size="small">
+        <div class="uk-width-expand uk-text-medium">
+            <span class="uk-margin-small-right" uk-icon="icon: info; ratio: 1.3"></span> No blogs found
         </div>
     </li>
     {% endfor %}

@@ -48,7 +48,7 @@
         <div class="uk-margin">
           <div class="uk-inline uk-width-1-1">
             <span class="uk-form-icon" uk-icon="icon: info"></span>
-            <input type="text" name="name" maxlength="200" required="" id="id_name" class="uk-input uk-form-large" placeholder="Full name" value="{{user.name}}">
+            <input type="text" name="name" maxlength="200" required="" id="id_name" class="uk-input uk-form-large" placeholder="Full name" value="{% if user.name %}{{user.name}} {%endif%}">
           </div>
         </div>
   
@@ -61,7 +61,7 @@
   
         <section class="uk-margin" uk-margin>
           <h4 class="uk-margin-remove-bottom"><label for="id_bio">Bio</label></h4>
-          <textarea name="bio" cols="40" rows="10" id="id_bio" spellcheck="false" class="uk-textarea uk-form-large uk-width-expand" aria-label="Textarea">{{user.bio}}</textarea>
+          <textarea name="bio" cols="40" rows="10" id="id_bio" spellcheck="false" class="uk-textarea uk-form-large uk-width-expand" aria-label="Textarea">{% if user.bio %}{{user.bio}} {%endif%}</textarea>
         </section>
 
 

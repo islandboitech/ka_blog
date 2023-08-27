@@ -29,7 +29,7 @@ def blogs(request):
         | Q(title__icontains=q)
         | Q(description__icontains=q)
         | Q(author__username__icontains=q)
-    ).order_by('-updated', '-created')
+    ).order_by('-updated', '-created').annotate(countcomments=Count("comment"))
     # recent_activity = Comment.objects.all()[:5] # show all messages regardless of topic
     # recent_activity = Comment.objects.all()[:5]  # show messages based on the topic selected
     recent=getRecentActivity()
@@ -50,7 +50,7 @@ def blog(request, pk):
     # topics = Topic.objects.annotate(blogcount=Count("blog"))
     participants = blog.participants.all()
     # comments = blog.comment_set.all().order_by("-created")
-    comments = blog.comment_set.all()  # ordering is defined in the model directly
+    comments = blog.comment_set.all().order_by('-created')  # ordering is defined in the model directly
     recent=getRecentActivity()
 
     context = {
@@ -166,7 +166,7 @@ def update_comment(request, blogid, pk):
         #     form.save()
         return redirect("page-blog", blogid)
     else:
-        comments = blog.comment_set.all()
+        comments = blog.comment_set.all().order_by('-created')
         form = FormComment(instance=comment)
         related_posts=Blog.objects.filter(topic__name__iexact=blog.topic).exclude(id=blogid)[:10]
         recent=getRecentActivity()
