@@ -1,0 +1,107 @@
+{% load static %}
+<div class="mdc-semi-transparent uk-position-top">
+    <nav class="uk-navbar-container uk-navbar-transparent uk-padding-small"
+        uk-sticky="end: #image-header">
+        <div uk-navbar class="uk-margin-medium-left uk-margin-medium-right">
+            <div class="uk-navbar-left">
+                <a class="uk-navbar-item uk-logo" href="/" aria-label="Back to Home"><img
+                        src="{% static 'images/logov3.png' %}"
+                        class="uk-margin-remove-right uk-margin-small-bottom mdc-logo-small"
+                        alt="kaBlog.">
+                    <h4 class="uk-margin-remove uk-text-bold">kaBlog.</h4>
+                </a>
+
+            </div>
+
+            <div class="uk-navbar-right">
+                <!-- start: large nav -->
+                <ul class="uk-navbar-nav uk-visible@m">
+
+                    {% if request.user.is_authenticated %}
+                    <li>
+                        <a href="{% url 'page-blogs' %}">Blog<span uk-navbar-parent-icon></span></a>
+                        <div class="uk-navbar-dropdown">
+                            <ul class="uk-nav uk-navbar-dropdown-nav">
+                                <li><a href="{% url 'new-blog' %}">New Blog</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    {% else %}
+                    <li><a href="{% url 'page-blogs' %}">Blog</a></li>
+                    {% endif %}
+
+
+                    <li><a href="#">About</a></li>
+
+                    <li>
+                        <a href="#">Account<span uk-navbar-parent-icon></span></a>
+                        <div class="uk-navbar-dropdown">
+                            <ul class="uk-nav uk-navbar-dropdown-nav">
+                                {% if request.user.is_authenticated %}
+                                <li><a href="{% url 'edit-profile' %}">Settings</a></li>
+                                <li><a href="{% url 'logout' %}">Logout</a></li>
+                                {% else %}
+                                <li><a href="{% url 'login' %}">Login</a></li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+                <!-- end: large nav -->
+
+                <!-- start: search form nav -->
+                <div>
+                    <a class="uk-navbar-toggle" href="#modal-full" uk-search-icon uk-toggle></a>
+
+                    <div id="modal-full" class="uk-modal-full uk-modal" uk-modal>
+                        <div class="uk-modal-dialog uk-flex uk-flex-center uk-flex-middle"
+                            uk-height-viewport>
+                            <button class="uk-modal-close-full" type="button" uk-close></button>
+                            <form class="uk-search uk-search-large" action="{% url 'page-blogs' %}">
+                                <input class="uk-search-input uk-text-center" type="search"
+                                    placeholder="Search blogs..." aria-label="Search"  name="q" autofocus>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <!-- start: search form nav -->
+
+                <!-- start: small nav -->
+                <a class="uk-navbar-toggle uk-hidden@m" uk-navbar-toggle-icon href="javascript:void(0)"
+                    uk-toggle="target: #offcanvas-push"></a>
+                <!-- start: offcanvas nav -->
+                <div id="offcanvas-push" uk-offcanvas="mode: push; overlay: true">
+                    <div class="uk-offcanvas-bar">
+
+                        <ul class="uk-nav uk-nav-default uk-margin-medium-bottom">
+                            <li class="uk-parent"><a href="{% url 'page-blogs' %}">Blog</a>
+                            {% if request.user.is_authenticated %}
+                            <ul class="uk-nav-sub">
+                            <li><a href="{% url 'new-blog' %}">New Blog</a></li>
+                            </ul>
+                            {% endif %}
+                            </li>
+                            <li><a href="#">About</a></li>
+                            <li class="uk-parent">
+                                <div>Account</div>
+                                <ul class="uk-nav-sub">
+                                    {% if request.user.is_authenticated %}
+                                    <li><a href="{% url 'edit-profile' %}">Settings</a></li>
+                                    <li><a href="{% url 'logout' %}">Logout</a></li>
+                                    {% else %}
+                                    <li><a href="{% url 'login' %}">Login</a></li>
+                                    {% endif %}
+                                </ul>
+                            </li>
+                            {% comment %} <li class="uk-nav-divider"></li> {% endcomment %}
+                        </ul>
+                        
+                        {% include 'blog/list_sidebar_topics.html' %}
+
+                    </div>
+                </div>
+                <!-- end: offcanvas nav -->
+                <!-- end: small nav -->
+            </div>
+    </nav>
+</div>

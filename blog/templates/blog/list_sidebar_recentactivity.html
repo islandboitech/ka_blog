@@ -1,4 +1,4 @@
-<div class="py-4 px-6">
+{% comment %} <div class="py-4 px-6">
   <!-- <h3 class="text-primary-500 font-bold uppercase">All</h3> -->
 
   <ul>
@@ -21,4 +21,46 @@
       </li>
     {% endfor %}
   </ul>
+
+  <h2>Recent</h2>
+<ul>
+  {% for activity in recent %}
+  <li>{{activity.action}}</li>
+  {% endfor %}
+</ul>
+</div> {% endcomment %}
+
+{% if recent|length %}
+
+{% load static %}
+<div>
+<h5 class="uk-text-danger">Recent Activity</h5>
+<ul class="uk-comment-list">
+  {% for activity in recent %}
+    <li>
+        <article class="uk-comment" role="comment">
+            <header class="uk-comment-header uk-margin-remove-bottom">
+                <div class="uk-grid-small uk-flex-middle" uk-grid>
+                    <div class="uk-width-auto">
+                        <img class="uk-comment-avatar uk-border-circle" src="{% get_media_prefix %}{{ activity.author__avatar }}"
+                            width="65" height="65" alt="">
+                    </div>
+                    <section class="uk-width-expand">
+                        <h4 class="uk-comment-title uk-margin-remove uk-link-reset"><a
+                                href="{% url 'user-profile' activity.author %}">@{{ activity.author__username }}</a></h4>
+                        <time class="uk-comment-meta uk-text-small">{{ activity.updated|timesince }} ago</time>
+                    </section>
+                </div>
+            </header>
+            <div class="uk-comment-body uk-text-small">
+              <small class="uk-text-muted">{{activity.action}} "{{activity.title}}"</small>
+              {% if activity.comment%}
+                  <p class="uk-margin-remove">{{ activity.comment|truncatewords_html:8}}</p>
+              {% endif %}
+            </div>
+        </article>
+    </li>
+    {% endfor %}
+</ul>
 </div>
+{% endif %}

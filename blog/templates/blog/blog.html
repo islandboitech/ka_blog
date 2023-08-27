@@ -1,9 +1,140 @@
 {% extends 'base.html' %}
 
+{% block pageheading %}
+  {% include 'pageheading-small.html' %}
+  {% block navigation %}
+    {% include 'navigation.html' %}
+  {% endblock %}
+{% endblock %}
+
+
+{% block sidebar %}
+    <!-- start: author -->
+    <div>
+        <h5 class="uk-text-danger">Author</h5>
+        <!-- <ul class="t"> -->
+        <ul class="uk-comment-list">
+            <li>
+                <article class="uk-comment" role="comment">
+                    <header class="uk-comment-header">
+                        <div class="uk-grid-small uk-flex-middle" uk-grid>
+                            <div class="uk-width-auto">
+                                <img class="uk-comment-avatar uk-border-circle" src="{{blog.author.avatar.url}}"
+                                    width="80" height="80" alt="">
+                            </div>
+                            <section class="uk-width-expand">
+                                <h5 class="uk-comment-title uk-margin-remove uk-link-reset"><a
+                                        href="{% url 'user-profile' blog.author.id %}">@{{blog.author.username}}</a></h5>
+                                <time class="uk-comment-meta">{{blog.author.email}}</time>
+                            </section>
+                        </div>
+                    </header>
+                </article>
+            </li>
+        </ul>
+    </div>
+    <!-- end: author -->
+    {% if related_posts|length %}
+    <!-- start: related Posts -->
+    <div>
+        <h5 class="uk-text-danger">Related Posts</h5>
+        <ul class="uk-nav uk-nav-secondary">
+
+            {% for post in related_posts %}
+            <li><a href="{% url 'page-blog' post.id %}">
+                <div>@{{post.author.username}} | {{post.created|timesince}} ago<div class="uk-nav-subtitle">{{post.title}}</div>
+                </div>
+            </a></li>
+        <li>
+            {% endfor %}
+        </ul>
+    </div>
+    <!-- end: related Posts -->
+    {% endif %}
+
+    {% include 'blog/list_sidebar_topics.html' %}
+    {% include 'blog/list_sidebar_recentactivity.html' %}
+
+    <!-- start: back button -->
+    <small><a href="{% url 'page-blogs' %}" class="uk-text-danger mdc-link-no-line"><span uk-icon="icon: arrow-left"></span>back to the blog</a></small>
+    <!-- end: back button -->
+    
+{% endblock %}
+
+{% block content %}
+    <section class="uk-margin-medium-bottom">
+        
+        <h2 class="uk-text-secondary uk-margin-remove-bottom uk-margin-remove-top">{{ blog.title }}{% if request.user == blog.author %}  <a class="uk-text-small mdc-link-no-line" href="{% url 'update-blog' blog.id %}">✏️Edit Blog</a> {% endif %}</h2>
+        <small class="uk-text-muted"><h5 class="uk-text-danger uk-margin-remove-bottom"><span uk-icon="tag"></span> {{blog.topic|title}}</h5>
+            Written by <a href="{% url 'user-profile' blog.author.id %}">{{ blog.author }}</a> {{ blog.created|timesince }} ago.
+        </small>
+    </section>
+
+    <div id="wrapper-content" class="uk-dropcap uk-text-justify">
+    {% if blog.featured_image %}
+        <img src="{{blog.featured_image.url}}" alt="" class="uk-width-expand">
+    {% endif %}
+    {{ blog.description|linebreaksbr }}
+    </div>
+
+    <!-- start: comment section -->
+    <div>
+        {% if request.user.is_authenticated %}
+        <!-- start: comment form -->
+        <form method="post" action="" class="uk-margin-large-top">
+            {% csrf_token %}
+            <fieldset class="uk-fieldset">
+                <legend class="uk-legend uk-text-normal">Write a comment</legend>
+                <div class="uk-margin">
+                    <textarea class="uk-textarea" rows="5" placeholder="Write your message here..." aria-label="Textarea"  name="comment"></textarea>
+                    <input type="submit" class="uk-button uk-button-primary uk-margin-small-top" value="Submit" />
+                </div>
+            </fieldset>
+        </form>
+        <!-- end: comment form -->
+        {% endif %}
+
+        {% if comments|length > 0 %}
+        <h5 class="uk-text-danger"><span uk-icon="icon: comments"></span> Comments</h5>
+        <ul class="uk-comment-list" uk-scrollspy="cls: uk-animation-fade; target: .uk-comment; delay: 200;">
+            {% for comment in comments %}
+            <li>
+                <article class="uk-comment" role="comment">
+                    <header class="uk-comment-header">
+                        <div class="uk-grid-small uk-flex-middle" uk-grid>
+                            <div class="uk-width-auto">
+                                <img class="uk-comment-avatar uk-border-circle" src="{{comment.author.avatar.url}}"
+                                    width="80" height="80" alt="">
+                            </div>
+                            <section class="uk-width-expand">
+                                <h4 class="uk-comment-title uk-margin-remove uk-link-reset"><a
+                                        href="{% url 'user-profile' comment.author.id %}">@{{ comment.author.username }}</a></h4>
+                                <small class="uk-comment-meta">{{ comment.created|timesince }} ago</small>
+                            </section>
+                        </div>
+                    </header>
+                    <div class="uk-comment-body uk-text-small uk-text-justify">
+                        {{ comment.comment|linebreaksbr }}
+                    </div>
+                </article>
+            </li>
+          {% endfor %}    
+        </ul>
+
+        {%endif%}
+    </div>
+    <!-- end: comment section -->
+{% endblock %}
+
+
+
+
+{% comment %} {% extends 'base.html' %}
+
 {% block pagetitle %}
   <header class="space-y-1 pb-8 pt-6 md:space-y-5">
     <time class="text-base font-medium leading-6 text-gray-400">{{ blog.created }}</time>
-    <h1 class="text-3xl font-bold leading-9 tracking-tight text-gray-900 sm:text-4xl sm:leading-10 md:text-6xl md:leading-14">{{ blog.title }}</h1><p class="text-lg leading-7 text-gray-400">{{ blog.author }}</p>
+    <h1 class="text-3xl font-bold leading-9 tracking-tight text-gray-900 sm:text-4xl sm:leading-10 md:text-6xl md:leading-14">{{ blog.title }}</h1><p class="text-lg leading-7 text-gray-400"><img width="50px" src="{{ blog.author.avatar.url }}" alt="{{blog.author}}" /> {{ blog.author }}</p>
   </header>
 {% endblock %}
 
@@ -17,7 +148,11 @@
 
 {% block content %}
   <div class="w-full">
-    <article>{{ blog.description|linebreaksbr }}</article>
+    <article>
+      {% if blog.featured_image %}
+      <img src="{{blog.featured_image.url}}" alt="">
+      {% endif %}
+      {{ blog.description|linebreaksbr }}</article>
   <div class="wrapper-comment">
     <br />
     <p>Comments</p>
@@ -52,3 +187,5 @@
   </div>
   </div>
 {% endblock %}
+
+ {% endcomment %}

@@ -2,9 +2,10 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from .models import Blog, Topic, Comment
-from .forms import FormBlog, FormUserProfile
-from django.db.models import Count, Q
+from .forms import FormBlog
+from django.db.models import Count, Q, Value, Case, When
 from django.contrib import messages
+from datetime import date
 # {{request.META.HTTP_REFERER}} # use this link to go back to the previous page (used in delete form in this system)
 
 # Create your views here.
@@ -17,29 +18,43 @@ def blogs(request):
         | Q(title__icontains=q)
         | Q(description__icontains=q)
         | Q(author__username__icontains=q)
-    )
+    ).order_by('-updated', '-created')
     # recent_activity = Comment.objects.all()[:5] # show all messages regardless of topic
-    recent_activity = Comment.objects.filter(Q(blog__topic__name__icontains=q))[:5]  # show messages based on the topic selected
+    recent_activity = Comment.objects.all()[:5]  # show messages based on the topic selected
+
+    # start: queryset UNION BLOG and COMMENT for recent activity
+    qsBlog = Blog.objects.all().values('id', 'author', 'author__username', 'author__avatar', 'created', 'updated', 'title').annotate(comment=Value(''), action=Value('Posted a blog'))
+    qsComment = Comment.objects.all().values('id', 'author', 'author__username', 'author__avatar', 'created', 'updated', 'blog__title', 'comment').annotate(action=Value('Wrote a comment to'))
+    recent=qsBlog.union(qsComment).order_by('-updated', '-created')[:5]
+    # print(recent)
+    # end: queryset UNION
+
     topics = Topic.objects.annotate(blogcount=Count("blog"))
-    context = {"blogs": blogs, "topics": topics, "recent_activity": recent_activity, }
+    context = {"blogs": blogs, "topics": topics, "recent_activity": recent_activity, 'recent':recent }
     return render(request, "blog/blogs.html", context)
 
 
 def blog(request, pk):
     blog = Blog.objects.get(id=pk)
+    topic=blog.topic
+    print(topic)
     if request.method == "POST":
         comment = Comment.objects.create(author=request.user, blog=blog, comment=request.POST.get("comment"))
         blog.participants.add(request.user)
         return redirect("page-blog", pk=blog.id)
-    topics = Topic.objects.annotate(blogcount=Count("blog"))
+    related_posts=Blog.objects.filter(topic__name__iexact=topic).exclude(id=pk)[:10]
+    # topics = Topic.objects.annotate(blogcount=Count("blog"))
     participants = blog.participants.all()
     # comments = blog.comment_set.all().order_by("-created")
     comments = blog.comment_set.all()  # ordering is defined in the model directly
+
+
     context = {
         "blog": blog,
         "comments": comments,
         "participants": participants,
-        "topics": topics,
+        "related_posts": related_posts,
+        # "topics": topics,
     }
     return render(request, "blog/blog.html", context)
 
@@ -54,9 +69,10 @@ def new_blog(request):
                 author=request.user,
                 topic=topic,
                 title=request.POST.get('title'),
-                description=request.POST.get('description')
+                description=request.POST.get('description'),
+                featured_image= request.FILES['featured_image'] if request.FILES.get('featured_image') is not None else None
             )
-            return redirect("page_home")
+            return redirect("page-blogs")
         except:
             messages.error(request, "An error occured while saving the blog.")
             return redirect("new-blog")
@@ -84,16 +100,24 @@ def update_blog(request, pk):
         blog.topic=topic
         blog.title=request.POST.get('title')
         blog.description=request.POST.get('description')
+        if request.FILES.get('featured_image') is not None:
+            blog.featured_image= request.FILES['featured_image']
+        else:
+            blog.featured_image=None
+
+        if not blog.isupdated:
+            blog.isupdated=True
         blog.save()
 
         # form = FormBlog(request.POST, instance=blog)
         # if form.is_valid():
         #     form.save()
-        return redirect("page_home")
+        return redirect("page-blogs")
     else:
         form = FormBlog(instance=blog)
-        topics = Topic.objects.all()
-        context = {"pagetitle": "Update Blog", "form": form, "topics": topics, "blog": blog}
+        # topics = Topic.objects.all()
+        related_posts=Blog.objects.filter(topic__name__iexact=blog.topic).exclude(id=pk)[:10]
+        context = {"pagetitle": "Edit Blog", "form": form, "blog": blog, 'related_posts': related_posts}
         return render(request, "blog/form_blog.html", context)
 
 
@@ -103,7 +127,7 @@ def delete_blog(request, pk):
     if request.user != blog.author:
         return HttpResponse("You are not allowed to edit or delete a blog created by others.")
     blog.delete()
-    return redirect("page_home")
+    return redirect("page-blogs")
 
 
 @login_required(login_url="login")
@@ -112,16 +136,4 @@ def delete_comment(request, blogid, pk):
     if request.user != comment.author:
         return HttpResponse("You are not allowed to edit or delete a comment created by others.")
     comment.delete()
-    return redirect("page-blog", pk=blogid)
-
-@login_required(login_url='login')
-def edit_userprofile(request):
-    if request.method=='POST':
-        form=FormUserProfile(request.POST, instance=request.user)
-        if form.is_valid():
-            form.save()
-            return redirect('user-profile', pk=request.user.id)
-
-    form=FormUserProfile(instance=request.user)
-    context={'form':form}
-    return render(request, 'blog/form_edit_userprofile.html', context)
+    return redirect("page-blogs", pk=blogid)

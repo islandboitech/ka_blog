@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block pagtitle %}
+  <h1>Update user profile [{{ request.user }}]</h1>
+{% endblock %}
+{% block content %}
+  <p>Update user profile form here</p>
+  <form method="post" action="" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% for field in form %}
+      <section>
+        <small><label for="">{{ field.labe }}</label></small>
+        {{ field }}
+      </section>
+    {% endfor %}
+    <input type="submit" value="Submit" />
+  </form>
+{% endblock %}

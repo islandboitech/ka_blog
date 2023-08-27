@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block pagetitle %}
+  <header class="space-y-1 pb-8 pt-6 md:space-y-5">
+    <time class="text-base font-medium leading-6 text-gray-400">{{ blog.created }}</time>
+    <h1 class="text-3xl font-bold leading-9 tracking-tight text-gray-900 sm:text-4xl sm:leading-10 md:text-6xl md:leading-14">{{ blog.title }}</h1><p class="text-lg leading-7 text-gray-400"><img width="50px" src="{{ blog.author.avatar.url }}" alt="{{blog.author}}" /> {{ blog.author }}</p>
+  </header>
+{% endblock %}
+
+
+
+{% block sidebar_left %}
+  <div class="hidden max-h-screen h-full sm:flex flex-wrap bg-gray-50 dark:bg-gray-900/70 shadow-md pt-5 dark:shadow-gray-800/40 rounded min-w-[280px] max-w-[280px] sticky top-28">
+    {% include 'blog\list_sidebar_topics.html' %}
+  </div>
+{% endblock %}
+
+{% block content %}
+  <div class="w-full">
+    <article>
+      {% if blog.featured_image %}
+      <img src="{{blog.featured_image.url}}" alt="">
+      {% endif %}
+      {{ blog.description|linebreaksbr }}</article>
+  <div class="wrapper-comment">
+    <br />
+    <p>Comments</p>
+    {% for comment in comments %}
+      <small>
+        <a href="{% url 'user-profile' comment.author.id %}">👨‍🦰 @{{ comment.author }} </a>| {{ comment.created|timesince }} ago
+        {% if request.user == comment.author %}
+          | <a href="{% url 'delete-comment' comment.blog.id comment.id %}">❌ Delete</a>
+        {% endif %}
+      </small>
+      <section>{{ comment.comment }}</section>
+      <hr />
+      {% empty %}
+      <small>No comments yet.</small>
+    {% endfor %}
+  </div>
+
+  {% if request.user.is_authenticated %}
+    <div class="wrapper-form mt-20">
+      <form method="post" action="">
+        {% csrf_token %}
+        <input name="comment" type="text" placeholder="Write your message here..." />
+      </form>
+    </div>
+  {% endif %}
+
+  <div class="wrapper-participants">
+    <h2>Particpants</h2>
+    {% for user in participants %}
+      <small><a href="{% url 'user-profile' user.id %}"></a>👨‍🦰 @{{ user }}</small>
+    {% endfor %}
+  </div>
+  </div>
+{% endblock %}
