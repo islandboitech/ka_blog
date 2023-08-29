@@ -29,21 +29,21 @@
   {% endfor %}
 </ul>
 </div> {% endcomment %}
-
-{% if recent|length %}
+{% if user_activity|length > 0 %}
 
 {% load static %}
+<h2 class="uk-text-secondary uk-margin-remove-bottom uk-margin-large-top">User Activity</h2>
 <div>
-<h5 class="uk-text-danger uk-margin-remove-bottom">Recent Activity</h5>
-<ul class="uk-comment-list uk-margin-remove-top">
-  {% for activity in recent %}
+{% comment %} <h5 class="uk-text-danger uk-margin-remove-bottom">Recent Acticity</h5> {% endcomment %}
+<ul class="uk-comment-list uk-margin-remove-top" uk-scrollspy="cls: uk-animation-fade; target: .the-comment; delay: 200;">
+  {% for activity in user_activity %}
     <li class="uk-margin-small-top">
-        <article class="uk-padding-small" role="comment">
+        <article class="uk-padding-small the-comment" role="comment">
             <header class="uk-comment-header uk-margin-remove-bottom">
                 <div class="uk-grid-small uk-flex-middle" uk-grid>
                     <div class="uk-width-auto">
                         <img class="uk-comment-avatar uk-border-circle" src="{% get_media_prefix %}{{ activity.author__avatar }}"
-                            width="65" height="65" alt="">
+                            width="80" height="80" alt="">
                     </div>
                     <section class="uk-width-expand">
                         <h5 class="uk-margin-remove uk-link-reset"><a
@@ -52,17 +52,19 @@
                     </section>
                 </div>
             </header>
-            <div class="uk-comment-body uk-text-small">
-              <small class="uk-text-muted">
+            <div class="uk-comment-body uk-text-normal">
+              <div class="uk-text-muted">
                 {% if activity.isupdated %}
                   {{activity.action2}}
                 {% else %}
                 {{activity.action1}}
                 {% endif %}
-                "<a class="uk-link-reset mdc-text-bold-medium" href='{%url 'page-blog' activity.id%}'>{{activity.title}}</a>"</small>
-              {% if activity.comment%}
-                  <p class="uk-margin-remove uk-padding-small uk-border-rounded uk-background-muted">{{ activity.comment|truncatewords_html:8}}</p>
-              {% endif %}
+                "<a class="uk-link-reset mdc-text-bold-medium" href='{%url 'page-blog' activity.id%}'>{{activity.title}}</a>"
+                
+                {% if activity.comment%}
+                    <p class="uk-margin-remove uk-padding-small uk-border-rounded uk-background-muted">{{ activity.comment|truncatewords_html:25}}</p>
+                {% endif %}
+              </div>
             </div>
         </article>
     </li>

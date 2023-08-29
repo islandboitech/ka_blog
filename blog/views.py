@@ -13,8 +13,9 @@ def getRecentActivity():
     # variable declarations
     # start: queryset UNION BLOG and COMMENT for recent activity
     qsBlog = Blog.objects.all().values('id', 'author', 'author__username', 'author__avatar', 'created', 'updated', 'isupdated', 'title').annotate(comment=Value(''), action1=Value('Posted a blog'), action2=Value('Edited a blog'))
-    qsComment = Comment.objects.all().values('id', 'author', 'author__username', 'author__avatar', 'created', 'updated', 'isupdated', 'blog__title', 'comment').annotate(action1=Value('Wrote a comment to'), action2=Value('Edited a comment'))
+    qsComment = Comment.objects.all().values('blog__id', 'author', 'author__username', 'author__avatar', 'created', 'updated', 'isupdated', 'blog__title', 'comment').annotate(action1=Value('Wrote a comment to'), action2=Value('Edited a comment'))
     recent=qsBlog.union(qsComment).order_by('-updated', '-created')[:5]
+    # print(recent)
     return recent
     # end: queryset UNION
     
@@ -34,7 +35,7 @@ def blogs(request):
     # recent_activity = Comment.objects.all()[:5]  # show messages based on the topic selected
     recent=getRecentActivity()
     topics = Topic.objects.annotate(blogcount=Count("blog"))
-    context = {"blogs": blogs, "topics": topics,  'recent':recent }
+    context = {"blogs": blogs, "topics": topics,  'recent':recent, 'pagetitle':"Blogs" }
     return render(request, "blog/blogs.html", context)
 
 
@@ -58,7 +59,9 @@ def blog(request, pk):
         "comments": comments,
         "participants": participants,
         "related_posts": related_posts,
-        "recent":recent
+        "recent":recent,
+        'pagetitle':blog.title,
+        'showcomment_btn':True
         # "topics": topics,
     }
     return render(request, "blog/blog.html", context)

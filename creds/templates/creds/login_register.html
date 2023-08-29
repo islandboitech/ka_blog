@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>kaBlog.</title>
+    <meta property="og:image" content="{% static 'images/logov3.png' %}" />
+    <title>kaBlog. {{pagetitle}}</title>
     <!-- UIkit CSS -->
     <link rel="stylesheet" href="{% static 'styles/uikit.css' %}" />
     <link rel="stylesheet" href="{% static 'styles/custom.css' %}">
@@ -33,8 +34,8 @@
 
    {% if page == 'login' %}
 
-        <h3 class="uk-card-title uk-text-center uk-margin-remove-bottom">Log in</h3>
-        <h5 class="uk-text-center uk-margin-remove-top uk-margin-medium-bottom">to continue to kaBlog</h5>
+        <h3 class="uk-card-title uk-text-center uk-margin-remove-bottom">{{pagetitle}}</h3>
+        <h5 class="uk-text-center uk-margin-remove-top uk-margin-medium-bottom">to continue to kaBlog.</h5>
         {% if messages %}
         <div class="uk-margin uk-text-center uk-text-small uk-text-danger">
             {% for message in messages %}
@@ -75,7 +76,7 @@
 
 
 
-    <h3 class="uk-card-title uk-text-center">Create an Account</h3>
+    <h3 class="uk-card-title uk-text-center">{{pagetitle}}</h3>
     {% if messages %}
     <div class="uk-margin uk-text-center uk-text-small uk-text-danger">
         {% for message in messages %}
@@ -170,7 +171,7 @@
     </form>
 
     <footer class="uk-width-1-1 uk-text-center uk-text-small uk-margin-medium-top">
-      <div class="uk-card-body uk-padding-remove-top">
+      <div class="uk-card-body uk-padding-remove-top mdc-link-no-line">
           <a class="uk-display-block uk-link-reset" href="{% url 'page-blogs' %}" aria-label="Back to Home"><img src="{% static 'images/logov3.png' %}"
                   class="uk-margin-remove-right uk-margin-small-bottom mdc-logo-tiny uk-display-inline-block" alt="kaBlog.">
               <h5 class="uk-margin-remove uk-text-bold uk-display-inline-block">kaBlog.</h5>

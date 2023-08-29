@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>kaBlog.</title>
+    <meta property="og:image" content="{% static 'images/logov3.png' %}" />
+    <title>kaBlog. {{pagetitle}}</title>
     <!-- UIkit CSS -->
     <link rel="stylesheet" href="{% static 'styles/uikit.css' %}" />
     <link rel="stylesheet" href="{% static 'styles/custom.css' %}">
@@ -61,7 +62,7 @@
   
         <section class="uk-margin" uk-margin>
           <h4 class="uk-margin-remove-bottom"><label for="id_bio">Bio</label></h4>
-          <textarea name="bio" cols="40" rows="10" id="id_bio" spellcheck="false" class="uk-textarea uk-form-large uk-width-expand" aria-label="Textarea">{% if user.bio %}{{user.bio}} {%endif%}</textarea>
+          <textarea name="bio" cols="40" rows="10" id="id_bio" spellcheck="false" class="uk-textarea uk-form-large uk-width-expand" aria-label="Textarea" placeholder="Say something about yourself...">{% if user.bio %}{{user.bio}} {%endif%}</textarea>
         </section>
 
 
@@ -86,7 +87,7 @@
         <div class="uk-margin">
           <input type="submit" class="uk-button uk-button-primary uk-button-large uk-width-1-1" value="Save changes">
         </div>
-        <div class="uk-text-small uk-text-center"><a href="{%url 'page-blogs'%}"><span class=" uk-margin-remove-right" uk-icon="home"></span> Home</a> <a href="{% url 'logout' %}"><span class="uk-margin-small-left uk-margin-remove-right" uk-icon="sign-out"></span> Logout</a>
+        <div class="uk-text-small uk-text-center mdc-link-no-line"><a href="{%url 'page-blogs'%}"><span class=" uk-margin-remove-right" uk-icon="home"></span> Home</a> <a href="{% url 'logout' %}"><span class="uk-margin-small-left uk-margin-remove-right" uk-icon="sign-out"></span> Logout</a>
         </div>
       </form>
     <footer class="uk-width-1-1 uk-text-center uk-text-small uk-margin-medium-top">

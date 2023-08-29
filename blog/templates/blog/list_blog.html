@@ -27,7 +27,7 @@
 
 
 
-<ul uk-grid="masonry: true" class="js-filter uk-child-width-1-2@m uk-child-width-1-3@xl" uk-scrollspy="cls: uk-animation-fade; target: .uk-card; delay: 200;">
+<ul uk-grid="masonry: true" class="js-filter uk-child-width-1-2@m uk-child-width-1-3@xl uk-margin-medium-top" uk-scrollspy="cls: uk-animation-fade; target: .uk-card; delay: 200;">
     {% for blog in blogs %}     
     <li data-topic="{{blog.topic}}" data-size="small">
         <div class="uk-card uk-card-default uk-card-hover">
@@ -39,7 +39,7 @@
             <div class="uk-card-body">
                 <article class="uk-article">
                     <h3 class="uk-card-title uk-margin-remove-vertical"><a class="uk-link-reset" href="{% url 'page-blog' blog.id %}">{{blog.title}}</a></h3>
-                    <small class="uk-text-muted"><h5 class="uk-text-danger uk-margin-remove-bottom"><span uk-icon="tag"></span> {{blog.topic|title}}</h5>Written by <a href="{% url 'user-profile' blog.author.id %}">{{blog.author.username}}</a> {{blog.created|timesince}} ago.</small>
+                    <small class="uk-text-muted"><h5 class="uk-text-danger uk-margin-remove-bottom"><span uk-icon="tag"></span> {{blog.topic|title}}</h5>Written by <a href="{% url 'user-profile' blog.author.id %}">@{{blog.author.username}}</a> {{blog.created|timesince}} ago.</small>
                     <p>{{blog.description|truncatewords_html:30}}</p>
 
                     <div class="uk-grid-small uk-child-width-auto" uk-grid>

@@ -65,7 +65,7 @@
 
 {% block content %}
     <section class="uk-margin-medium-bottom">
-        <h2 class="uk-text-secondary uk-margin-remove-bottom uk-margin-remove-top">{{pagetitle}}</h2>
+        {% comment %} <h2 class="uk-text-secondary uk-margin-remove-bottom uk-margin-remove-top">{{pagetitle}}</h2> {% endcomment %}
         {% comment %} <small class="uk-text-muted"><h5 class="uk-text-danger uk-margin-remove-bottom"><span uk-icon="tag"></span> {{blog.topic|title}}</h5>
             Written by <a href="{% url 'user-profile' blog.author.id %}">{{ blog.author }}</a> {{ blog.created|timesince }} ago.
         </small> {% endcomment %}

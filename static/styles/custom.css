@@ -6,7 +6,7 @@
 }
 
 html {
-    font-size: clamp(16px, 3.5vw, 20px);
+    font-size: clamp(16px, 3.5vw, 22px);
     line-height: 1.5em;
 }
 
@@ -67,6 +67,10 @@ a.mdc-link-no-line {
 .mdc-text-tiny,
 .mdc-text-tiny * {
     font-size: .7rem !important;
+}
+
+.mdc-text-bold-medium {
+    font-weight: 500 !important;
 }
 
 /* subnav */

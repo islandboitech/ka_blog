@@ -10,14 +10,23 @@ from .forms import FormUserProfile, userRegistrationForm
 from .models import User
 
 
-def getRecentActivity(pk):
+def getActivity(pk, current_user, limit=5):
     # variable declarations
     # start: queryset UNION BLOG and COMMENT for recent activity
-    qsBlog = Blog.objects.all().values('id', 'author', 'author__username', 'author__avatar', 'created', 'updated', 'isupdated', 'title').annotate(comment=Value(''), action1=Value('Posted a blog'), action2=Value('Edited a blog')).filter(author__id__iexact=pk)
-    qsComment = Comment.objects.all().values('id', 'author', 'author__username', 'author__avatar', 'created', 'updated', 'isupdated', 'blog__title', 'comment').annotate(action1=Value('Wrote a comment to'), action2=Value('Edited a comment')).filter(author__id__iexact=pk)
-    recent=qsBlog.union(qsComment).order_by('-updated', '-created')[:5]
+    qsBlog = Blog.objects.all().values('id', 'author', 'author__username', 'author__avatar', 'created', 'updated', 'isupdated', 'title').annotate(comment=Value(''), action1=Value('Posted a blog'), action2=Value('Edited a blog'))
+
+    if current_user:
+        qsBlog=qsBlog.filter(author__id__iexact=pk)
+
+    qsComment = Comment.objects.all().values('blog__id', 'author', 'author__username', 'author__avatar', 'created', 'updated', 'isupdated', 'blog__title', 'comment').annotate(action1=Value('Wrote a comment to'), action2=Value('Edited a comment'))
+
+    if current_user:
+        qsComment=qsComment.filter(author__id__iexact=pk)
+    
+    recent=qsBlog.union(qsComment).order_by('-updated', '-created')
+
     # print(recent)
-    return recent
+    return recent[:limit] if limit > 0 else recent
     # end: queryset UNION
 
 def registerUser(request):
@@ -41,7 +50,7 @@ def registerUser(request):
             )
 
     form = userRegistrationForm()
-    context = {"form": form}
+    context = {"form": form, 'pagetitle': 'Create an Account'}
     return render(request, "creds/login_register.html", context)
 
 
@@ -58,7 +67,7 @@ def loginUser(request):
             user = authenticate(request, email=email, password=password)
             if user is not None:
                 login(request, user)
-                messages.error(request, f"Login seccessful. You are logged in as @{user.username}.")
+                messages.success(request, f"Login seccessful. You are logged in as @{user.username}.")
                 return redirect("page-blogs")
             else:
                 messages.error(request, "The email or password does not exist!")
@@ -66,12 +75,13 @@ def loginUser(request):
             messages.error(request, "User does not exist!")
 
     page = "login"
-    context = {"page": page}
+    context = {"page": page, 'pagetitle': 'Log in'}
     return render(request, "creds/login_register.html", context)
 
 
 def logoutUser(request):
     logout(request)
+    messages.success(request, f"You have been successfully logged out.")
     return redirect("page-blogs")
 
 
@@ -84,15 +94,18 @@ def userProfile(request, pk):
         Q(blog__author__id__iexact=pk)
         ))
     # recent_activity = author.comment_set.all()
-    recent=getRecentActivity(pk)
+    # activity=getActivity(pk)
     context = {
         "user": author,
         "topics": topics,
-        "recent": recent,
+        "recent": getActivity(pk, False, 5),
+        "user_activity": getActivity(pk, True, 0),
         # "blogtotalcount": blogtotalcount,
         # "recent_activity": recent_activity,
         "blogs": blogs,
+        "pagetitle": 'User Profile'
     }
+    print(len(context['user_activity']))
     return render(request, "creds/userprofile.html", context)
 
 
@@ -106,5 +119,5 @@ def edit_userprofile(request):
             return redirect('user-profile', pk=user.id)
 
     form=FormUserProfile(instance=user)
-    context={'form':form, 'pagetitle':"Edit Profile"}
+    context={'form':form, 'pagetitle':"Update Profile"}
     return render(request, 'creds/form_edit_userprofile.html', context)

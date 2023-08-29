@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>kaBlog.</title>
+    <meta property="og:image" content="{% static 'images/logov3.png' %}" />
+    <title>kaBlog. {{pagetitle}}</title>
     <!-- UIkit CSS -->
     <link rel="stylesheet" href="{% static 'styles/uikit.css' %}" />
     <link rel="stylesheet" href="{% static 'styles/custom.css' %}">
@@ -45,10 +46,6 @@
         </header>
         
         
-        
-
-
-
         <!-- start: sidebar navigation -->
         <aside class="uk-width-1-3@m uk-width-1-4@xl uk-visible@m">
             <div class="uk-card-body uk-position-z-index" uk-sticky="end: #wrapper-content; offset: 0">
@@ -63,7 +60,9 @@
             <div class="uk-card-body">
                 <!-- <h1 id="page-title">Blogs</h1> -->
                 <!-- start:text content -->
-
+                {%if pagetitle%}
+                <h2 class="uk-text-secondary uk-margin-remove-bottom uk-margin-remove-top">{{ pagetitle }}</h2>
+                {%endif%}
                 {% block content %}
                 {% endblock content %}
 
@@ -86,20 +85,26 @@
     </main>
 
     <!-- start: back to top -->
-    <a id="btn-back-to-top" href="javascript:void(0)"
-        class="uk-icon-button uk-margin-small-right uk-hidden uk-box-shadow-small uk-box-shadow-hover-medium"
-        style="position: fixed !important; bottom:40px; right: 10px; width: 50px; height: 50px; background-color: #c7c7c79c;"><span
-            uk-icon="icon: arrow-up; ratio: 1.8" class="uk-dark"></span></a>
+    {%if showcomment_btn %}
+        <a id="btn-to-comments" href="javascript:void(0)" class="uk-icon-button uk-margin-small-right uk-hidden uk-box-shadow-small uk-box-shadow-hover-medium" style="position: fixed !important; bottom:100px; right: 10px; width: 50px; height: 50px; background-color: #c7c7c79c;"><span uk-icon="icon: comments; ratio: 1.2" class="uk-dark"></span></a>
+    {%endif%}
+
+    <a id="btn-back-to-top" href="javascript:void(0)" class="uk-icon-button uk-margin-small-right uk-hidden uk-box-shadow-small uk-box-shadow-hover-medium" style="position: fixed !important; bottom:40px; right: 10px; width: 50px; height: 50px; background-color: #c7c7c79c;"><span uk-icon="icon: arrow-up; ratio: 1.8" class="uk-dark"></span></a>
 
     <script>
         // Get the button 
-        const mybutton = document.getElementById("btn-back-to-top");
+        const btn = document.getElementById("btn-back-to-top");
+        const btn_comment = document.getElementById("btn-to-comments");
         // When the user scrolls down 250px from the top of the document, show the button 
         const scrollFunction = () => {
-            if (document.body.scrollTop > 1550 || document.documentElement.scrollTop > 1550) {
-                mybutton.classList.remove("uk-hidden");
+            if (document.body.scrollTop > 1050 || document.documentElement.scrollTop > 1050) {
+                btn.classList.remove("uk-hidden");
+                if(btn_comment)
+                    btn_comment.classList.remove("uk-hidden");
             } else {
-                mybutton.classList.add("uk-hidden");
+                btn.classList.add("uk-hidden");
+                if(btn_comment)
+                    btn_comment.classList.add("uk-hidden");
             }
         };
 
@@ -107,8 +112,15 @@
             window.scrollTo({ top: 0, behavior: "smooth" });
         };
 
+        const toComments=()=>{
+            document.getElementById('section-list-comments').scrollIntoView({behavior: 'smooth'});
+        }
+
         // When the user clicks on the button, scroll to the top of the document 
-        mybutton.addEventListener("click", backToTop); window.addEventListener("scroll", scrollFunction);
+        btn.addEventListener("click", backToTop);
+        if(btn_comment)
+            btn_comment.addEventListener("click", toComments); 
+        window.addEventListener("scroll", scrollFunction);
     </script>
     <!-- end: back to top -->
 </body>

@@ -13,7 +13,7 @@
 {% endblock %}
 
 {% block content %}
-<section class="uk-margin-medium-bottom">
+<section class="uk-margin-medium-bottom uk-margin-medium-top">
   <article class="uk-comment" role="comment">
     <header class="uk-comment-header">
         <div class="uk-grid-small uk-flex-middle" uk-grid>
@@ -36,7 +36,7 @@
     </div>
     {%endif%}
     
-  <h2 class="uk-text-secondary uk-margin-remove-bottom uk-margin-large-top">Blog Posts</h2>
+  
 </article>      
 
 
@@ -45,7 +45,9 @@
       Written by <a href="{% url 'user-profile' blog.author.id %}">@{{ blog.author }}</a> {{ blog.created|timesince }} ago.
   </small> {% endcomment %}
 </section>
+<h2 class="uk-text-secondary uk-margin-remove-bottom uk-margin-large-top">Blog Posts</h2>
   {% include 'blog/list_blog.html' %}
+  {% include 'blog/user_activity.html' %}
 {% endblock %}
 
 {% comment %}
