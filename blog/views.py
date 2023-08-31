@@ -111,7 +111,7 @@ def update_blog(request, pk):
         blog.description=request.POST.get('description')
         if request.FILES.get('featured_image') is not None:
             blog.featured_image= request.FILES['featured_image']
-        else:
+        elif request.POST.get('featured_image-clear'):
             blog.featured_image=None
 
         if not blog.isupdated:
